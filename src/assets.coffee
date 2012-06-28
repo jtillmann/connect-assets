@@ -71,7 +71,7 @@ class ConnectAssets
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
-    context.js = (route, routeOptions) =>
+    context.js = (route, routeOptions = {}) =>
       loadingKeyword = ''
       route = expandRoute route, '.js', context.js.root
       if route.match REMOTE_PATH
