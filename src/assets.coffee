@@ -63,11 +63,11 @@ class ConnectAssets
         shortRoute += ext
       shortRoute
 
-    context.css = (route) =>
+    context.css = (route, routeOptions = {}) =>
       route = expandRoute route, '.css', context.css.root
       unless route.match REMOTE_PATH
         route = @options.servePath + @compileCSS route
-      return route if @options.pathsOnly
+      return route if @options.pathsOnly or routeOptions.pathsOnly
       "<link rel='stylesheet' href='#{route}'>"
     context.css.root = 'css'
 
@@ -81,7 +81,7 @@ class ConnectAssets
       else
         routes = (@options.servePath + p for p in @compileJS route)
 
-      return routes if @options.pathsOnly
+      return routes if @options.pathsOnly or routeOptions.pathsOnly
       if routeOptions? and @options.build
         loadingKeyword = 'async ' if routeOptions.async?
         loadingKeyword = 'defer ' if routeOptions.defer?
