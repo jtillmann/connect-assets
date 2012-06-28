@@ -86,7 +86,24 @@ class ConnectAssets
         loadingKeyword = 'async ' if routeOptions.async?
         loadingKeyword = 'defer ' if routeOptions.defer?
 
-      ("<script #{loadingKeyword}src='#{r}'></script>" for r in routes).join '\n'
+      if routeOptions.lazy
+        """
+<script>
+(function() {
+  var routes = ['#{routes.join("','")}']
+  for(var i = 0, len = routes.length; i < len; i++) {
+    var scr = document.createElement('script');
+    scr.type = 'text/javascript';
+    scr.async = true;
+    scr.src = routes[i]
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(scr, s);
+  }
+})();
+</script>
+        """
+      else
+        ("<script #{loadingKeyword}src='#{r}'></script>" for r in routes).join '\n'
     context.js.root = 'js'
 
     context.img = (route) =>
