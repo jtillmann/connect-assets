@@ -191,7 +191,7 @@ class ConnectAssets
             @cssSourceFiles[sourcePath] = {data, mtime: stats.mtime}
             source = data.toString 'utf8'
           startTime = new Date
-          css = cssCompilers[ext].compileSync @absPath(sourcePath), source
+          css = cssCompilers[ext].compileSync @absPath(sourcePath), source, @options
           if css is @compiledCss[sourcePath]?.data.toString 'utf8'
             alreadyCached = true
           else
@@ -267,7 +267,7 @@ exports.cssCompilers = cssCompilers =
 
   styl:
     optionsMap: {}
-    compileSync: (sourcePath, source) ->
+    compileSync: (sourcePath, source, assetOptions) ->
       result = ''
       callback = (err, js) ->
         throw err if err
@@ -277,8 +277,9 @@ exports.cssCompilers = cssCompilers =
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
       libs.nib or= try require 'nib' catch e then (-> ->)
       libs.bootstrap or= try require 'bootstrap-stylus' catch e then (-> ->)
-      options = @optionsMap[sourcePath] ?=
-        filename: sourcePath
+      options = assetOptions.compilerOptions?.styl or {}
+      options.filename = sourcePath
+      @optionsMap[sourcePath] = options
       libs.stylus(source, options)
           .use(libs.bootstrap())
           .use(libs.nib())
